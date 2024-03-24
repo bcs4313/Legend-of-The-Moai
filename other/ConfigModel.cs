@@ -10,10 +10,11 @@ using BepInEx.Configuration;
 
 // stores public vars for the plugin that relate to
 // config files.
-namespace ExampleEnemy.other
+namespace MoaiEnemy
 {
     internal class ConfigModel
     {
+        // consider these multipliers for existing values
         // consider these multipliers for existing values
         public static ConfigEntry<float> moaiGlobalSize;
         public static ConfigEntry<float> moaiGlobalMusicVol;

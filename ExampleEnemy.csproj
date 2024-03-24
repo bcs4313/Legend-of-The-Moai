@@ -7,7 +7,7 @@
     <AssemblyName>ExampleEnemy</AssemblyName>
 		<!-- This assembly description doesn't show up on Thunderstore. -->
     <!-- Configure description for Thunderstore at ./Thunderstore/thunderstore.toml -->
-    <Description>Moai Enemy for Lethal Company.</Description>
+    <Description>MoaiMoai Enemy for Lethal Company.</Description>
 		<!-- This is the version of your plugin. This will be used by tcli when building our Thunderstore package. -->
     <Version>1.1.4</Version>
 		<!-- This is required for BepInEx to load us properly. -->
@@ -24,13 +24,13 @@
   </PropertyGroup>
   <PropertyGroup>
 	  <!-- Your Thunderstore Team name. This will be used by tcli when building our Thunderstore package. -->
-    <ThunderstoreTeam>Hamunii</ThunderstoreTeam>
-    <PackageId>MoaiEnemy</PackageId>
+    <ThunderstoreTeam>bcs4313</ThunderstoreTeam>
+    <PackageId>ExampleEnemy</PackageId>
     <AssemblyVersion>1.1.4</AssemblyVersion>
     <FileVersion>1.1.4</FileVersion>
     <Authors>bcs4313</Authors>
     <Title>Moai Enemy</Title>
-    <Product>MoaiEnemy</Product>
+    <Product>ExampleEnemy</Product>
   </PropertyGroup>
 
   <ItemGroup>
@@ -46,6 +46,9 @@
 
   <!-- Get references to DLL files. -->
   <ItemGroup>
+    <Reference Include="LC_API">
+      <HintPath>dlls\LC_API.dll</HintPath>
+    </Reference>
     <Reference Include="LethalConfig">
       <HintPath>..\..\VS Projects\Moai\dlls\LethalConfig.dll</HintPath>
     </Reference>
@@ -53,6 +56,14 @@
     <Reference Include="Assembly-CSharp"><HintPath>../dlls/Assembly-CSharp.dll</HintPath></Reference>
     <Reference Include="Unity.Netcode.Runtime"><HintPath>../dlls/Unity.Netcode.Runtime.dll</HintPath></Reference>
 	  <Reference Include="LethalLib"><HintPath>../dlls/LethalLib.dll</HintPath></Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="src\examplene.cs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Compile>
+    <Compile Update="src\Plugin.cs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Compile>
   </ItemGroup>
 
   <!-- Allows us to use Rpc methods. See https://github.com/EvaisaDev/UnityNetcodePatcher -->
