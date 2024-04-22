@@ -5,7 +5,6 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UIElements;
-using LC_API;
 using static ExampleEnemy.src.MoaiNormal.MoaiRedNet;
 using static ExampleEnemy.Plugin;
 using System.Threading.Tasks;
@@ -128,11 +127,11 @@ namespace ExampleEnemy.src.MoaiRed
                 if (newSize < 1)
                 {
                     var p = (double)newSize;
-                    LC_API.Networking.Network.Broadcast("redMoaisizeset", new redMoaiSizePkg(NetworkObject.NetworkObjectId, newSize, (float)Math.Pow(p, 0.3)));
+                    //LC_API.Networking.Network.Broadcast("redMoaisizeset", new redMoaiSizePkg(NetworkObject.NetworkObjectId, newSize, (float)Math.Pow(p, 0.3)));
                 }
                 else
                 {
-                    LC_API.Networking.Network.Broadcast("redMoaisizeset", new redMoaiSizePkg(NetworkObject.NetworkObjectId, newSize, newSize));
+                    //LC_API.Networking.Network.Broadcast("redMoaisizeset", new redMoaiSizePkg(NetworkObject.NetworkObjectId, newSize, newSize));
                 }
             }
 
@@ -151,11 +150,11 @@ namespace ExampleEnemy.src.MoaiRed
                 if (moaiGlobalSize.Value < 1)
                 {
                     var p = (double)moaiGlobalSize.Value;
-                    LC_API.Networking.Network.Broadcast("redMoaisizeset", new redMoaiSizePkg(NetworkObject.NetworkObjectId, moaiGlobalSize.Value, (float)Math.Pow(p, 0.3)));
+                    //LC_API.Networking.Network.Broadcast("redMoaisizeset", new redMoaiSizePkg(NetworkObject.NetworkObjectId, moaiGlobalSize.Value, (float)Math.Pow(p, 0.3)));
                 }
                 else
                 {
-                    LC_API.Networking.Network.Broadcast("redMoaisizeset", new redMoaiSizePkg(NetworkObject.NetworkObjectId, moaiGlobalSize.Value, moaiGlobalSize.Value));
+                    //LC_API.Networking.Network.Broadcast("redMoaisizeset", new redMoaiSizePkg(NetworkObject.NetworkObjectId, moaiGlobalSize.Value, moaiGlobalSize.Value));
                 }
             }
 
@@ -233,7 +232,7 @@ namespace ExampleEnemy.src.MoaiRed
                     if (!creatureVoice.isPlaying)
                     {
                         //Debug.Log("MSOUND: creatureVoice");
-                        LC_API.Networking.Network.Broadcast("redMoaisoundplay", new redMoaiSoundPkg(NetworkObject.NetworkObjectId, "creatureVoice"));
+                        //LC_API.Networking.Network.Broadcast("redMoaisoundplay", new redMoaiSoundPkg(NetworkObject.NetworkObjectId, "creatureVoice"));
                     }
 
                     // object search and state switch;
@@ -272,7 +271,7 @@ namespace ExampleEnemy.src.MoaiRed
                     if (!creatureSFX.isPlaying && !preparing)
                     {
                         //Debug.Log("MSOUND: creatureSFX");
-                        LC_API.Networking.Network.Broadcast("redMoaisoundplay", new redMoaiSoundPkg(NetworkObject.NetworkObjectId, "creatureSFX"));
+                        //LC_API.Networking.Network.Broadcast("redMoaisoundplay", new redMoaiSoundPkg(NetworkObject.NetworkObjectId, "creatureSFX"));
                         preparing = true;
                     }
 
@@ -288,7 +287,7 @@ namespace ExampleEnemy.src.MoaiRed
 
                     if(!creatureBlitz.isPlaying)
                     {
-                        LC_API.Networking.Network.Broadcast("redMoaisoundplay", new redMoaiSoundPkg(NetworkObject.NetworkObjectId, "creatureBlitz"));
+                        //LC_API.Networking.Network.Broadcast("redMoaisoundplay", new redMoaiSoundPkg(NetworkObject.NetworkObjectId, "creatureBlitz"));
                     }
 
                     // in blitz, the target resets if blitzTarget is Vector3.zero
@@ -307,7 +306,7 @@ namespace ExampleEnemy.src.MoaiRed
                         {
                             blitzTarget = GetClosestPlayer(false, true, false).gameObject.transform.position;
                             startPosFromTarget = this.transform.position;
-                            playerTargetSteps = 2;
+                            playerTargetSteps = 1;
                             Debug.Log("red: target player");
                         }
                     }
@@ -341,7 +340,7 @@ namespace ExampleEnemy.src.MoaiRed
                         if (!creatureFood.isPlaying)
                         {
                             //Debug.Log("MSOUND: creatureFood");
-                            LC_API.Networking.Network.Broadcast("redMoaisoundplay", new redMoaiSoundPkg(NetworkObject.NetworkObjectId, "creatureFood"));
+                            //LC_API.Networking.Network.Broadcast("redMoaisoundplay", new redMoaiSoundPkg(NetworkObject.NetworkObjectId, "creatureFood"));
                         }
                     }
                     else
@@ -349,12 +348,12 @@ namespace ExampleEnemy.src.MoaiRed
                         if (!creatureEat.isPlaying && eatingScrap)
                         {
                             //Debug.Log("MSOUND: creatureEat");
-                            LC_API.Networking.Network.Broadcast("redMoaisoundplay", new redMoaiSoundPkg(NetworkObject.NetworkObjectId, "creatureEat"));
+                            //LC_API.Networking.Network.Broadcast("redMoaisoundplay", new redMoaiSoundPkg(NetworkObject.NetworkObjectId, "creatureEat"));
                         }
                         if (!creatureEatHuman.isPlaying && eatingHuman)
                         {
                             //Debug.Log("MSOUND: creatureEatHuman");
-                            LC_API.Networking.Network.Broadcast("redMoaisoundplay", new redMoaiSoundPkg(NetworkObject.NetworkObjectId, "creatureEatHuman"));
+                            //LC_API.Networking.Network.Broadcast("redMoaisoundplay", new redMoaiSoundPkg(NetworkObject.NetworkObjectId, "creatureEatHuman"));
                         }
                         if (eatingTimer > 0)
                         {
@@ -408,8 +407,8 @@ namespace ExampleEnemy.src.MoaiRed
                                 {
                                     Debug.Log("MOAI: Attaching Body to Mouth");
                                     eatingTimer = 150;
-                                    LC_API.Networking.Network.Broadcast("redMoaiattachbody", new redMoaiAttachBodyPkg(NetworkObject.NetworkObjectId, ply.NetworkObject.NetworkObjectId));
-                                    LC_API.Networking.Network.Broadcast("redMoaisoundplay", new redMoaiSoundPkg(NetworkObject.NetworkObjectId, "creatureEatHuman"));
+                                    //LC_API.Networking.Network.Broadcast("redMoaiattachbody", new redMoaiAttachBodyPkg(NetworkObject.NetworkObjectId, ply.NetworkObject.NetworkObjectId));
+                                    //LC_API.Networking.Network.Broadcast("redMoaisoundplay", new redMoaiSoundPkg(NetworkObject.NetworkObjectId, "creatureEatHuman"));
                                 }
                                 eatingHuman = true;
                             }
@@ -432,15 +431,15 @@ namespace ExampleEnemy.src.MoaiRed
                                     {
                                         Debug.Log("MOAI: Attaching Body to Mouth");
                                         eatingTimer = 150;
-                                        LC_API.Networking.Network.Broadcast("redMoaiattachbody", new redMoaiAttachBodyPkg(NetworkObject.NetworkObjectId, ply.NetworkObject.NetworkObjectId));
-                                        LC_API.Networking.Network.Broadcast("redMoaisoundplay", new redMoaiSoundPkg(NetworkObject.NetworkObjectId, "creatureEatHuman"));
+                                        //LC_API.Networking.Network.Broadcast("redMoaiattachbody", new redMoaiAttachBodyPkg(NetworkObject.NetworkObjectId, ply.NetworkObject.NetworkObjectId));
+                                        //LC_API.Networking.Network.Broadcast("redMoaisoundplay", new redMoaiSoundPkg(NetworkObject.NetworkObjectId, "creatureEatHuman"));
                                     }
                                     eatingHuman = true;
                                 }
                                 else if (!eatingScrap)
                                 {
                                     eatingTimer = (int)(obj.scrapValue / 1.8) + 15;
-                                    LC_API.Networking.Network.Broadcast("redMoaisoundplay", new redMoaiSoundPkg(NetworkObject.NetworkObjectId, "creatureEat"));
+                                    //LC_API.Networking.Network.Broadcast("redMoaisoundplay", new redMoaiSoundPkg(NetworkObject.NetworkObjectId, "creatureEat"));
                                 }
                                 eatingScrap = true;
                             }
@@ -562,23 +561,6 @@ namespace ExampleEnemy.src.MoaiRed
             TargetClosestPlayer(bufferDistance: 1.5f, requireLineOfSight: true);
             if (targetPlayer == null) return false;
             return targetPlayer != null && Vector3.Distance(transform.position, targetPlayer.transform.position) < range;
-        }
-
-        bool TargetClosestPlayerInAnyCase()
-        {
-            mostOptimalDistance = 23f;
-            targetPlayer = null;
-            for (int i = 0; i < StartOfRound.Instance.connectedPlayersAmount + 1; i++)
-            {
-                tempDist = Vector3.Distance(transform.position, StartOfRound.Instance.allPlayerScripts[i].transform.position);
-                if (tempDist < mostOptimalDistance)
-                {
-                    mostOptimalDistance = tempDist;
-                    targetPlayer = StartOfRound.Instance.allPlayerScripts[i];
-                }
-            }
-            if (targetPlayer == null) return false;
-            return true;
         }
 
         void StickingInFrontOfPlayer()

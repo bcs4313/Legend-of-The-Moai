@@ -11,20 +11,19 @@ using BepInEx.Configuration;
 using LethalConfig.ConfigItems;
 using LethalConfig.ConfigItems.Options;
 using LethalConfig;
-using static UnityEngine.GraphicsBuffer;
-using System;
-using UnityEngine.AI;
-using GameNetcodeStuff;
 using ExampleEnemy.src.MoaiNormal;
 
 namespace ExampleEnemy
 {
+    [BepInDependency("LethalNetworkAPI")]
+    [BepInDependency(LethalLib.Plugin.ModGUID)]
     [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
-    [BepInDependency(LethalLib.Plugin.ModGUID)] 
     public class Plugin : BaseUnityPlugin {
         public static Harmony _harmony; 
         public static EnemyType ExampleEnemy;
         public static new ManualLogSource Logger;
+
+        public static MoaiNormalNet networkHandler = new MoaiNormalNet();
 
         public void LogIfDebugBuild(string text)
         {
@@ -72,7 +71,7 @@ namespace ExampleEnemy
 
             // rarity range is 0-100 normally
             RegisterEnemy(ExampleEnemy, (int)(21 / moaiGlobalRarity.Value), LevelTypes.All, SpawnType.Daytime, tlTerminalNode, tlTerminalKeyword);
-            RegisterEnemy(MoaiBlue, (int)(27 / moaiGlobalRarity.Value), LevelTypes.All, SpawnType.Outside, MoaiBlueTerminalNode, MoaiBlueTerminalKeyword);
+            RegisterEnemy(MoaiBlue, (int)(14 / moaiGlobalRarity.Value), LevelTypes.All, SpawnType.Outside, MoaiBlueTerminalNode, MoaiBlueTerminalKeyword);
             //RegisterEnemy(MoaiRed, (int)(7 / moaiGlobalRarity.Value), LevelTypes.All, SpawnType.Daytime, MoaiRedTerminalNode, MoaiRedTerminalKeyword); 
             Logger.LogInfo($"Plugin {PluginInfo.PLUGIN_GUID} is loaded!");
 
@@ -91,8 +90,7 @@ namespace ExampleEnemy
                 }
             }
             Debug.Log("MOAI: Registering Moai Net Messages");
-            MoaiNormalNet.setup();
-            MoaiRedNet.setup();
+            networkHandler.setup();
         }
 
         // SETTINGS SECTION
