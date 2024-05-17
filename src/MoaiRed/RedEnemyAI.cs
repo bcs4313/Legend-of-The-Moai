@@ -22,6 +22,9 @@ namespace MoaiEnemy.src.MoaiNormal
         Vector3 startPosFromTarget = Vector3.zero;
         int playerTargetSteps = 1;
 
+        // extra audio sources
+        public AudioSource creatureBlitz;
+
         new enum State
         {
             // defaults
@@ -39,6 +42,7 @@ namespace MoaiEnemy.src.MoaiNormal
         public override void Start()
         {
             baseInit();
+            if (!creatureBlitz) { creatureBlitz = grabSource("CreatureBlitz") as AudioSource; }
         }
 
         public override void Update()
@@ -76,6 +80,57 @@ namespace MoaiEnemy.src.MoaiNormal
 
                 case (int)State.HeadSwingAttackInProgress:
                     baseHeadSwingAttackInProgress();
+                    break;
+                case (int)State.Blitz:
+                    agent.speed = 35f * moaiGlobalSpeed.Value;
+                    agent.acceleration *= 10;
+                    agent.angularSpeed *= 10;
+
+                    if (!creatureBlitz.isPlaying)
+                    {
+                        //LC_API.Networking.Network.Broadcast("redMoaisoundplay", new redMoaiSoundPkg(NetworkObject.NetworkObjectId, "creatureBlitz"));
+                    }
+
+                    // in blitz, the target resets if blitzTarget is Vector3.zero
+                    if (blitzTarget == Vector3.zero)
+                    {
+                        impatience = 0;
+                        if (playerTargetSteps == 1)
+                        {
+                            GameObject randomNode = allAINodes[UnityEngine.Random.RandomRangeInt(0, allAINodes.Length)];
+                            blitzTarget = randomNode.transform.position;
+                            startPosFromTarget = this.transform.position;
+                            playerTargetSteps = 0;
+                            Debug.Log("red: target random pos");
+                        }
+                        else if (playerTargetSteps == 0)
+                        {
+                            blitzTarget = GetClosestPlayer(false, true, false).gameObject.transform.position;
+                            startPosFromTarget = this.transform.position;
+                            playerTargetSteps = 1;
+                            Debug.Log("red: target player");
+                        }
+                    }
+
+                    targetPlayer = null;
+                    SetDestinationToPosition(blitzTarget);
+
+                    // blitz reset
+                    if (Vector3.Distance(transform.position, blitzTarget) < (transform.localScale.magnitude + transform.localScale.magnitude + impatience))
+                    {
+                        blitzTarget = Vector3.zero;
+                    }
+                    else
+                    {
+                        impatience += 0.1f;
+                    }
+
+                    // blitz explosions
+                    // The explosion chains start when a moai is 2/3th of completion to position
+                    if (Vector3.Distance(transform.position, blitzTarget) < (Vector3.Distance(startPosFromTarget, blitzTarget) / 3))
+                    {
+                        explosionChain(UnityEngine.Random.Range(1, 3), UnityEngine.Random.Range(0, 300), UnityEngine.Random.Range(0, 400));
+                    }
                     break;
 
                 default:

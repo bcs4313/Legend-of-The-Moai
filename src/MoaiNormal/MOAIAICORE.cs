@@ -151,20 +151,6 @@ namespace MoaiEnemy.src.MoaiNormal
                 Plugin.networkHandler.s_moaiHalo.SendAllClients(new moaiHaloPkg(NetworkObject.NetworkObjectId, false));
             }
 
-            // additional reference sources
-            if (!creatureFood) { creatureFood = grabSource("CreatureFood") as AudioSource; }
-            if (!creatureEat) { creatureEat = grabSource("CreatureEat") as AudioSource; }
-            if (!creatureEatHuman) { creatureEatHuman = grabSource("CreatureEatHuman") as AudioSource; }
-            if (!creatureHit) { creatureHit = grabSource("CreatureHit") as AudioSource; }
-            if (!creatureDeath) { creatureDeath = grabSource("CreatureDeath") as AudioSource; }
-            if (!creatureVoice) { creatureVoice = grabSource("CreatureVoice") as AudioSource; }
-            if (!creatureBelch) { creatureBelch = grabSource("CreatureBelch") as AudioSource; }
-            if (!slidingBasic) { slidingBasic = grabSource("SlidingBasic") as AudioSource; }
-            if (!slidingWood) { slidingWood = grabSource("SlidingWood") as AudioSource; }
-            if (!slidingSnow) { slidingSnow = grabSource("SlidingSnow") as AudioSource; }
-            if (!slidingMetal) { slidingMetal = grabSource("SlidingMetal") as AudioSource; }
-            if (!slidingGravel) { slidingGravel = grabSource("SlidingGravel") as AudioSource; }
-            if (!mouth) { mouth = grabTransform("Mouth");  }
             Plugin.networkHandler.s_moaiSoundPlay.SendAllClients(new moaiSoundPkg(NetworkObject.NetworkObjectId, "creatureBelch"));
             Plugin.networkHandler.s_moaiSoundPlay.SendAllClients(new moaiSoundPkg(NetworkObject.NetworkObjectId, "creatureVoice"));
 
@@ -982,6 +968,14 @@ namespace MoaiEnemy.src.MoaiNormal
                 }
             }
         }
+
+        // method to play a sound with a target string id
+        // can be overridden in moai variants (thus it is usable in MoaiNormalNet)
+        public void playSoundId(String id)
+        {
+            // do nothing
+        }
+
         public void stopAllSound()
         {
             // normal creature sounds
@@ -998,20 +992,6 @@ namespace MoaiEnemy.src.MoaiNormal
             for (int i = 0; i < sources.Length; i++)
             {
                 AudioSource s = sources[i];
-                if (s.name.Equals(argname))
-                {
-                    return s;
-                }
-            }
-            return null;
-        }
-
-        public Transform grabTransform(string argname)
-        {
-            var sources = GetComponentsInChildren<Transform>();
-            for (int i = 0; i < sources.Length; i++)
-            {
-                Transform s = sources[i];
                 if (s.name.Equals(argname))
                 {
                     return s;

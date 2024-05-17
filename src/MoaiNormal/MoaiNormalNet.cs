@@ -269,13 +269,6 @@ namespace MoaiEnemy.src.MoaiNormal
 
             target.creatureSFX.pitch /= sizePkg.pitchAlter;
             target.creatureVoice.pitch /= sizePkg.pitchAlter;
-
-            target.creatureFood = target.grabSource("CreatureFood");
-            target.creatureEat = target.grabSource("CreatureEat");
-            target.creatureEatHuman = target.grabSource("CreatureEatHuman");
-            target.creatureHit = target.grabSource("CreatureHit");
-            target.creatureDeath = target.grabSource("CreatureDeath");
-
             target.creatureFood.pitch /= sizePkg.pitchAlter;
             target.creatureEat.pitch /= sizePkg.pitchAlter;
             target.creatureEatHuman.pitch /= sizePkg.pitchAlter;
