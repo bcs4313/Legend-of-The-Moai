@@ -212,6 +212,9 @@ namespace MoaiEnemy.src.MoaiNormal
                 case "creaturePrepare":
                     target.playSoundId("creaturePrepare");
                     break;
+                case "creatureKidnap":
+                    target.playSoundId("creatureKidnap");
+                    break;
                 case "slidingBasic":
                     target.stopSlideSounds();
                     target.isSliding = true;
@@ -275,6 +278,7 @@ namespace MoaiEnemy.src.MoaiNormal
             target.creatureEatHuman.pitch /= sizePkg.pitchAlter;
             target.creatureHit.pitch /= sizePkg.pitchAlter;
             target.creatureDeath.pitch /= sizePkg.pitchAlter;
+            target.setPitches(sizePkg.pitchAlter);
         }
 
         private void m_moaiAttachBody(moaiAttachBodyPkg bodyPkg)

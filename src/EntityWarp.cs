@@ -33,7 +33,7 @@ namespace MoaiEnemy.src
             __instance.allAINodes = GameObject.FindGameObjectsWithTag("AINode");
 
 
-            //--- FIND BEST ENTERANCE ---
+            //--- FIND BEST ENTRANCE ---
             EntranceTeleport[] array = UnityEngine.Object.FindObjectsOfType<EntranceTeleport>(false);
             bool foundBest = false;
             for (int j = 0; j < array.Length; j++)

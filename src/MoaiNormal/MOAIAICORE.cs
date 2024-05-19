@@ -62,6 +62,7 @@ namespace MoaiEnemy.src.MoaiNormal
         // stamina mechancis
         protected float stamina = 0; // moai use stamina to chase the player
         bool recovering = false; // moai don't chase if they are recovering
+        public int provokePoints = 0;
 
 #pragma warning disable 0649
         public Transform turnCompass;
@@ -89,6 +90,11 @@ namespace MoaiEnemy.src.MoaiNormal
 #if DEBUG
             Plugin.Logger.LogInfo(text);
 #endif
+        }
+
+        public virtual void setPitches(float pitchAlter)
+        {
+            // do nothing
         }
 
         public void setHalo(bool active)
@@ -256,6 +262,10 @@ namespace MoaiEnemy.src.MoaiNormal
         public void baseAIInterval()
         {
             goodBoy -= 1;
+            if(provokePoints > 0)
+            {
+                provokePoints--;
+            }
             if (entranceDelay > 0) { entranceDelay--; }
             slidingSoundTick();
 
@@ -339,7 +349,7 @@ namespace MoaiEnemy.src.MoaiNormal
             // object search and state switch;
             if (getObj() || getPlayerCorpse()) { SwitchToBehaviourClientRpc((int)State.HeadSwingAttackInProgress); }
 
-            if (FoundClosestPlayerInRange(28f, true))
+            if (FoundClosestPlayerInRange(28f, true) || provokePoints > 0)
             {
                 StopSearch(currentSearch);
                 SwitchToBehaviourClientRpc((int)State.StickingInFrontOfPlayer);
@@ -403,6 +413,11 @@ namespace MoaiEnemy.src.MoaiNormal
         {
             targetPlayer = null;
             agent.speed = 4f * moaiGlobalSpeed.Value;
+
+            if (provokePoints > 0)
+            {
+                goodBoy = 0;
+            }
 
             if (guardTarget == Vector3.zero)
             {
@@ -521,7 +536,7 @@ namespace MoaiEnemy.src.MoaiNormal
             }
 
             // Keep targetting closest player, unless they are over 20 units away and we can't see them.
-            if (!FoundClosestPlayerInRange(22f, false) && !FoundClosestPlayerInRange(28f, true))
+            if (!FoundClosestPlayerInRange(22f, false) && !FoundClosestPlayerInRange(28f, true) && provokePoints <= 0)
             {
                 targetPlayer = null;
                 StartSearch(transform.position);
@@ -876,6 +891,13 @@ namespace MoaiEnemy.src.MoaiNormal
                 return;
             }
             this.enemyHP -= force;
+
+            if (playerWhoHit != null)
+            {
+                provokePoints += 20 * force;
+                targetPlayer = playerWhoHit;
+            }
+            stamina = 60;
             if (base.IsOwner)
             {
                 if (this.enemyHP <= 0)

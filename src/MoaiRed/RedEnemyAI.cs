@@ -25,9 +25,17 @@ namespace MoaiEnemy.src.MoaiNormal
         int playerTargetSteps = 0;
         int tempHp = 0;
 
+        // kidnap vars
+        private PlayerControllerB playerHeld = null;
+        bool afterEntranceTransport = false;
+        GameObject kidnapNode = null;
+        int invalidCounter = 0;
+        public Transform playerGrabPoint;
+
         // extra audio sources
         public AudioSource creaturePrepare;
         public AudioSource creatureBlitz;
+        public AudioSource creatureKidnap;
         public GameObject flameEffect;
         public GameObject swirlEffect;
 
@@ -43,7 +51,7 @@ namespace MoaiEnemy.src.MoaiNormal
             //define custom below
             Preparing,
             Blitz,
-            Staring
+            Kidnapping
         }
 
         public override void Start()
@@ -51,13 +59,28 @@ namespace MoaiEnemy.src.MoaiNormal
             baseInit();
             creatureBlitz.volume = moaiGlobalMusicVol.Value;
             creaturePrepare.volume = moaiGlobalMusicVol.Value;
+            creatureKidnap.volume = moaiGlobalMusicVol.Value;
             flameEffect.SetActive(false);
+        }
+
+        public override void setPitches(float pitchAlter)
+        {
+            creatureBlitz.pitch /= pitchAlter;
+            creaturePrepare.pitch /= pitchAlter;
+            creatureKidnap.pitch /= pitchAlter;
         }
 
         public override void Update()
         {
             base.Update();
             baseUpdate();
+
+            if (isEnemyDead && playerHeld)
+            {
+                letPlayerGo();
+                kidnapNode = null;
+            }
+
             switch (currentBehaviourStateIndex)
             {
                 case (int)State.Preparing:
@@ -83,6 +106,10 @@ namespace MoaiEnemy.src.MoaiNormal
                 case "creaturePrepare":
                     stopAllSound();
                     creaturePrepare.Play();
+                    break;
+                case "creatureKidnap":
+                    stopAllSound();
+                    creatureKidnap.Play();
                     break;
             }
         }
@@ -135,7 +162,41 @@ namespace MoaiEnemy.src.MoaiNormal
 
         public bool playerIsDefenseless(PlayerControllerB player)
         {
-            return false;
+            var items = player.ItemSlots;
+
+            if(player.carryWeight >= 1.38)
+            {
+                return false;
+            }
+
+            for(int i = 0; i < items.Length; i++)
+            {
+                GrabbableObject item = items[i];
+                if (item && item.itemProperties && item.itemProperties.isDefensiveWeapon)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        private void letPlayerGo()
+        {
+            Debug.Log("RED MOAI: LetPlayerGo() called");
+            playerHeld.transform.parent = null;
+            tempHp = enemyHP;
+            blitzReset();
+            playerHeld.playerCollider.enabled = true;
+            afterEntranceTransport = false;
+
+            // the player needs to be on a navmesh spot (avoiding all collision bugs)
+            NavMeshHit hit;
+            var valid = UnityEngine.AI.NavMesh.SamplePosition(playerHeld.transform.position, out hit, 15f, NavMesh.AllAreas);
+            if (valid)
+            {
+                playerHeld.transform.position = hit.position;
+            }
+            playerHeld = null;
         }
 
         public override void DoAIInterval()
@@ -147,35 +208,81 @@ namespace MoaiEnemy.src.MoaiNormal
             base.DoAIInterval();
             baseAIInterval();
 
+            if(currentBehaviourStateIndex == (int)State.HeadSwingAttackInProgress)
+            {
+                if (playerHeld)
+                {
+                    letPlayerGo();
+                }
+            }
+
+            if (agent.velocity.magnitude < 1 && playerHeld)
+            {
+                invalidCounter++;
+                if(invalidCounter > 30 && playerHeld)
+                {
+                    letPlayerGo();
+                }
+            }
+            else
+            {
+                if (invalidCounter > 0)
+                {
+                    invalidCounter--;
+                }
+            }
+
             switch (currentBehaviourStateIndex)
             {
                 case (int)State.SearchingForPlayer:
                     Debug.Log("SearchingForPlayer");
-                    if (FoundClosestPlayerInRange(40f, true))  // sets targetPlayer when true
+
+                    // in this case, the player has entered the factory with the red moai
+                    if (playerHeld)
+                    {
+                        Debug.Log("RED MOAI: Switching back to kidnapping state -> continuation:: ");
+                        afterEntranceTransport = true;
+                        kidnapNode = allAINodes[UnityEngine.Random.RandomRangeInt(0, allAINodes.Length)];
+                        SwitchToBehaviourClientRpc((int)State.Kidnapping);
+                        return;
+                    }
+
+                    if (FoundClosestPlayerInRange(40f, true) || provokePoints > 0)  // sets targetPlayer when true
                     {
                         // stare state transfer
                         if (anger < 100)
                         {
-                            agent.speed = 0;
+                            if (!swirlEffect.activeInHierarchy) { swirlEffect.SetActive(true); }
+                            
+                            agent.speed = 0.01f;
                             if(playerOnRock(targetPlayer))
                             {
-                                anger = 100;
+                                anger += 20;
                             }
                             else
                             {   // anger builds up faster the closer you are
-                                anger += 37 / Vector3.Distance(transform.position, targetPlayer.transform.position);
+                                var logResult = (float)Math.Log(45 / Vector3.Distance(transform.position, targetPlayer.transform.position), 1.3); ;
+                                if (logResult > 2)
+                                {
+                                    anger += logResult;
+                                }
+                                else
+                                {
+                                    anger += 2;
+                                }
                             }
                             return;
                         }
+                        if (swirlEffect.activeInHierarchy) { swirlEffect.SetActive(false); }
 
                         // kidnap state transfer
-                        if (anger >= 100 && playerIsAlone(targetPlayer) && !playerOnRock(targetPlayer))
+                        if (anger >= 100 && playerIsAlone(targetPlayer) && playerIsDefenseless(targetPlayer) && !playerOnRock(targetPlayer) && (transform.localScale.x > 0.3) && (transform.localScale.x < 2.5))
                         {
                             Debug.Log("Swithing to Kidnap State");
                             StopSearch(currentSearch);
-                            tempHp = enemyHP;
-                            SwitchToBehaviourClientRpc((int)State.Preparing);
+                            SwitchToBehaviourClientRpc((int)State.Kidnapping);
                             anger = 0;
+                            Plugin.networkHandler.s_moaiSoundPlay.SendAllClients(new moaiSoundPkg(NetworkObject.NetworkObjectId, "creatureKidnap"));
                             return;
                         }
 
@@ -192,12 +299,75 @@ namespace MoaiEnemy.src.MoaiNormal
                     }
                     else
                     {
-                        if(anger > 0)
+                        if (swirlEffect.activeInHierarchy) { swirlEffect.SetActive(false); }
+                        if (anger > 0)
                         {
-                            anger -= 1;  // 20 seconds from 100 anger to completely deaggro
+                            anger -= 1.3f;  // 20 seconds from 100 anger to completely deaggro
                         }
                     }
                     baseSearchingForPlayer();
+                    break;
+                case (int)State.Kidnapping:
+                    agent.speed = 20f * moaiGlobalSpeed.Value;
+                    agent.acceleration = 80;
+                    agent.angularSpeed = 1200;
+
+                    // sub state - Getting to player
+                    if(!playerHeld)
+                    {
+                        Debug.Log("Transporting Player");
+                        // reset if player is lost
+                        if(!FoundClosestPlayerInRange(40f, true))
+                        {
+                            tempHp = enemyHP;
+                            blitzReset();
+                            break;
+                        }
+
+                        // attach player if they are close enough
+                        if (Vector3.Distance(transform.position, targetPlayer.transform.position) < targetPlayer.transform.localScale.magnitude + Math.Max(transform.localScale.magnitude, 1))
+                        {
+                            playerHeld = targetPlayer;
+                            playerHeld.DamagePlayer(-30);
+                            Debug.Log("RED MOAI: Attaching living player to mouth.");
+                            playerHeld.transform.parent = playerGrabPoint;
+                        }
+                    }
+                    else
+                    {
+                        Debug.Log("RED MOAI: PlayerHeld -> " + !playerHeld.isInsideFactory);
+                        playerHeld.playerCollider.enabled = false;
+
+                        // to ensure the player stays attached...
+                        playerHeld.transform.position = playerGrabPoint.position;
+                        playerHeld.transform.parent = playerGrabPoint;
+
+                        // substate - Transporting Player
+                        if (!afterEntranceTransport)
+                        {
+                            Debug.Log("RED MOAI: Transporting to Factory...");
+                            // transport player to factory first!
+                            baseHeadingToEntrance();
+                        }
+                        else if (kidnapNode && !agent.isPathStale)
+                        {
+                            Debug.Log("RED MOAI: searching for kidnapNode -> " + kidnapNode);
+                            agent.speed = 10f * moaiGlobalSpeed.Value;
+                            agent.acceleration = 80;
+                            agent.angularSpeed = 1200;
+                            SetDestinationToPosition(kidnapNode.transform.position);
+                            if((Vector3.Distance(transform.position, kidnapNode.transform.position) < 2 + transform.localScale.magnitude))
+                            {
+                                kidnapNode = null;
+                            }
+                        }
+                        else
+                        {
+                            Debug.Log("RED MOAI: Let go of player -> " + agent.isPathStale + " -- " + kidnapNode);
+                            // for now... let the player go
+                            letPlayerGo();
+                        }
+                    }
                     break;
                 case (int)State.HeadingToEntrance:
                     baseHeadingToEntrance();
@@ -226,6 +396,7 @@ namespace MoaiEnemy.src.MoaiNormal
                         playerTargetSteps = 0;
                         impatience = 0;
                         SwitchToBehaviourClientRpc((int)State.Blitz);
+                        tempHp = enemyHP;
                         return;
                     }
 
@@ -238,8 +409,8 @@ namespace MoaiEnemy.src.MoaiNormal
                     break;
                 case (int)State.Blitz:
                     agent.speed = 35f * moaiGlobalSpeed.Value;
-                    agent.acceleration *= 10;
-                    agent.angularSpeed *= 10;
+                    agent.acceleration = 80;
+                    agent.angularSpeed = 1200;
                     enemyHP = 500;
 
                     // in blitz, the target resets if blitzTarget is Vector3.zero
@@ -300,11 +471,6 @@ namespace MoaiEnemy.src.MoaiNormal
                     {
                         impatience += 0.1f;
                     }
-
-                    // The explosion chains start when a moai is 2/3th of completion to position
-                    if (Vector3.Distance(transform.position, blitzTarget) < (Vector3.Distance(startPosFromTarget, blitzTarget) / 3))
-                    {
-                    }
                     break;
 
                 default:
@@ -322,40 +488,20 @@ namespace MoaiEnemy.src.MoaiNormal
             blitzTarget = Vector3.zero;
         }
 
-        public async void explosionChain(int amount, int delay, int delayRandomness)
+        public override void HitEnemy(int force = 1, PlayerControllerB playerWhoHit = null, bool playHitSFX = false, int hitID = -1)
         {
-            for (int i = 0; i < amount; i++)
+            base.HitEnemy(force, playerWhoHit, playHitSFX);
+            if (this.isEnemyDead)
             {
-                Vector3 explosionPos = transform.position + UnityEngine.Vector3.up;
-                explosionPos.x += UnityEngine.Random.Range(-7.0f, 7.0f);
-                explosionPos.y += UnityEngine.Random.Range(-5.0f, 5.0f);
-                explosionPos.z += UnityEngine.Random.Range(-7.0f, 7.0f);
-                Landmine.SpawnExplosion(transform.position + UnityEngine.Vector3.up, true, 5.7f, 6.4f);
-                await Task.Delay(delay + UnityEngine.Random.Range(0, delayRandomness));
-            }
-        }
-
-        public Vector3 getRandomPlayerPos()
-        {
-            PlayerControllerB[] players = [];
-            for (int i = 0; i < RoundManager.Instance.playersManager.allPlayerScripts.Length; i++)
-            {
-                PlayerControllerB player = RoundManager.Instance.playersManager.allPlayerScripts[i];
-
-                if (player != null && player.name != null && player.transform != null)
-                {
-
-                    if(!player.isPlayerDead && !player.isInHangarShipRoom)
-                    {
-                        players.Append(player);
-                    }
-                }
+                return;
             }
 
-            if (players.Length > 0) { return players[UnityEngine.Random.RandomRangeInt(0, players.Length)].gameObject.transform.position; }
-            
-            return Vector3.zero;
+            if (playerWhoHit != null)
+            {
+                provokePoints += 20 * force;
+                stamina = 60;
+                anger = Math.Max(100, anger + force * 50);
+            }
         }
-
     }
 }
