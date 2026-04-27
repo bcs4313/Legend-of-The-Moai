@@ -1,4 +1,6 @@
 
+using EasterIsland;
+using System;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Rendering.HighDefinition;
@@ -6,26 +8,58 @@ using UnityEngine.Rendering.VirtualTexturing;
 
 public class Spewer : NetworkBehaviour
 {
-    int eruptHour;
-    int currentHour = -1;
-    bool noErupt;
+    public int eruptHour;
+    public int currentHour = -2;
+    public bool noErupt;
+
+    public int hoursForce = 0;
 
     // Start is called before the first frame update
     void Start()
     {
+        Spewer[] spewers = UnityEngine.Object.FindObjectsOfType<Spewer>();
+        Plugin.destroyOnLoad.Add(this.gameObject);
+
+        try
+        {
+            // handler for dropship spawns
+            ItemDropship dropShip = UnityEngine.Object.FindObjectsOfType<ItemDropship>()[0];
+
+            var g_obj = new GameObject();
+            LineRenderer r = g_obj.AddComponent<LineRenderer>();
+            g_obj.SetActive(false);
+
+
+            LineRenderer[] ropeFix = [r];
+            dropShip.ropes = ropeFix;
+        }
+        catch (Exception e)
+        {
+            Debug.LogError(e);
+        }
+
+        foreach (Spewer s in spewers)
+        {
+            if(s != this)
+            {
+                Destroy(s);
+            }
+        }
+
+
         var g = transform.Find("meteors").gameObject;
         g.GetComponent<ParticleSystem>().Stop();
         if (RoundManager.Instance.IsHost)
         {
             // select eruption time
-            if (Random.Range(0.0f, 1.0f) < 0.50)  // 50% chance for no eruption at all
+            if (UnityEngine.Random.Range(0.0f, 1.0f) < 0.50)  // 50% chance for no eruption at all
             {
-                eruptHour = getHour() + 999;
+                eruptHour = 2 + 999;
                 noErupt = true;
             }
             else
             {
-                eruptHour = getHour() + Random.Range(2, 17);
+                eruptHour = 2 + UnityEngine.Random.Range(2, 17);  // 2 is the starting hour
                 noErupt = false;
             }
 
@@ -83,12 +117,17 @@ public class Spewer : NetworkBehaviour
             // called whenever the hour changes
             if (currentHour != getHour())
             {
+                if (hoursForce > 0)
+                {
+                    hoursForce--;
+                }
+
                 currentHour = getHour();
                 fogTick();
                 var g = transform.Find("meteors").gameObject;
                 if (getHour() == eruptHour)
                 {
-                    var randomSeed = (uint)Random.Range(0, 255000);
+                    var randomSeed = (uint)UnityEngine.Random.Range(0, 255000);
                     playParticleSystemClientRpc(randomSeed);
 
                 }
@@ -96,6 +135,13 @@ public class Spewer : NetworkBehaviour
                 {
                     stopParticleSystemClientRpc();
                 }
+            }
+
+            // just forces the eruption! yay
+            if(hoursForce > 0)
+            {
+                var randomSeed = (uint)UnityEngine.Random.Range(0, 255000);
+                playParticleSystemClientRpc(randomSeed);
             }
         }
     }

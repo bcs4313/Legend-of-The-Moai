@@ -2,8 +2,9 @@ using Unity.Netcode;
 using UnityEngine.VFX;
 using UnityEngine;
 using System.Threading.Tasks;
+using UnityEngine.AI;
 
-public class GoldMoaiSpawn : EnemyAI
+public class GoldMoaiSpawn : MonoBehaviour
 {
     bool awaitSpawn = true;
 
@@ -12,31 +13,70 @@ public class GoldMoaiSpawn : EnemyAI
 
     public NoisemakerProp hive;
 
-    public override void Start()
+    public void OnEnable()
     {
-        base.Start();
-        if (base.IsServer)
+        Debug.Log("Gold Moai: OnEnable Call");
+        if (RoundManager.Instance.IsServer)
         {
             SpawnHiveNearEnemy();
         }
     }
 
+    private float RandomNumberInRadius(float radius, System.Random randomSeed)
+    {
+        return ((float)randomSeed.NextDouble() - 0.5f) * radius;
+    }
+
+    public Vector3 GetRandomNavMeshPositionInBoxPredictable(Vector3 pos, float radius = 10f, NavMeshHit navHit = default(NavMeshHit), System.Random randomSeed = null, int layerMask = -1)
+    {
+        float y = pos.y;
+        float x = RandomNumberInRadius(radius, randomSeed);
+        float y2 = RandomNumberInRadius(radius, randomSeed);
+        float z = RandomNumberInRadius(radius, randomSeed);
+        Vector3 vector = new Vector3(x, y2, z) + pos;
+        vector.y = y;
+        float num = Vector3.Distance(pos, vector);
+        if (NavMesh.SamplePosition(vector, out navHit, num + 2f, layerMask))
+        {
+            return navHit.position;
+        }
+
+        return pos;
+    }
+
     private async void SpawnHiveNearEnemy()
     {
-        if (base.IsServer)
+        if (RoundManager.Instance.IsServer)
         {
+
+            while(RoundManager.Instance.dungeonGenerator == null) 
+            {
+                Debug.Log($"Moai Enemy: Awaiting to spawn gold moai - -3...");
+                await Task.Delay(1000); 
+            }
+            while(RoundManager.Instance.dungeonGenerator.Generator == null) 
+            {
+                Debug.Log($"Moai Enemy: Awaiting to spawn gold moai - -2...");
+                await Task.Delay(1000); 
+            }
+            while(RoundManager.Instance.dungeonGenerator.Generator.IsGenerating) 
+            {
+                Debug.Log($"Moai Enemy: Awaiting to spawn gold moai - -1...");
+                await Task.Delay(1000); 
+            }
+
             while (awaitSpawn)
             {
                 var nodes = RoundManager.Instance.outsideAINodes;
-                if (nodes == null || nodes.Length == 0)
+                while (nodes == null || nodes.Length == 0)
                 {
                     Debug.Log($"Moai Enemy: Awaiting to spawn gold moai - 1...");
                     await Task.Delay(1000);
-                    continue;
+                    nodes = RoundManager.Instance.outsideAINodes;
                 }
 
                 Vector3 originPos = nodes[new System.Random().Next(0, nodes.Length)].transform.position;
-                Vector3 randomNavMeshPositionInBoxPredictable = RoundManager.Instance.GetRandomNavMeshPositionInBoxPredictable(originPos, 3f, RoundManager.Instance.navHit, new System.Random(), -5);
+                Vector3 randomNavMeshPositionInBoxPredictable = GetRandomNavMeshPositionInBoxPredictable(originPos, 3f, RoundManager.Instance.navHit, new System.Random(), -5);
                 if (randomNavMeshPositionInBoxPredictable == originPos)
                 {
                     Debug.Log($"Moai Enemy: Awaiting to spawn gold moai - 2...");
@@ -62,8 +102,8 @@ public class GoldMoaiSpawn : EnemyAI
         {
             hive = networkObject.gameObject.GetComponent<NoisemakerProp>();
             hive.targetFloorPosition = hivePosition;
-
-            int hiveScrapValue = new System.Random().Next(50, 501);
+            hive.isInFactory = false;
+            int hiveScrapValue = new System.Random().Next(50, 200);
 
             hive.scrapValue = hiveScrapValue;
             ScanNodeProperties componentInChildren = hive.GetComponentInChildren<ScanNodeProperties>();
@@ -80,6 +120,11 @@ public class GoldMoaiSpawn : EnemyAI
         {
             Debug.LogError("Moai Enemy: Error! gold moai could not be accessed from network object reference");
         }
-        Object.Destroy(this.gameObject);
+        Destroy(this.gameObject);
+    }
+
+    public void OnDestroy()
+    {
+        Debug.Log("Moai Enemy: Gold Moai Spawner has been destroyed in scene.");
     }
 }
