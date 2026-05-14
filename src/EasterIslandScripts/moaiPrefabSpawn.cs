@@ -3,6 +3,7 @@ using UnityEngine.VFX;
 using UnityEngine;
 using System.Threading.Tasks;
 using UnityEngine.AI;
+using EasterIsland;
 
 public class GoldMoaiSpawn : MonoBehaviour
 {
@@ -86,6 +87,7 @@ public class GoldMoaiSpawn : MonoBehaviour
 
                 Debug.Log($"Moai Enemy: Set gold moai random position: {randomNavMeshPositionInBoxPredictable}");
                 awaitSpawn = false;
+                hivePrefab = Plugin.GoldenHead;
                 GameObject gameObject = UnityEngine.Object.Instantiate(hivePrefab, randomNavMeshPositionInBoxPredictable + Vector3.up * 0.5f, Quaternion.Euler(Vector3.zero), RoundManager.Instance.spawnedScrapContainer);
                 gameObject.SetActive(value: true);
                 gameObject.GetComponent<NetworkObject>().Spawn();

@@ -57,6 +57,9 @@
     <Reference Include="Assembly-CSharp">
       <HintPath>..\Assembly_References_For_V73\Assembly-CSharp.dll</HintPath>
     </Reference>
+    <Reference Include="DunGen">
+      <HintPath>..\Assembly_References_For_V73\DunGen.dll</HintPath>
+    </Reference>
     <Reference Include="LethalCompanyInputUtils">
       <HintPath>..\Assembly_References_For_V73\EIOnly\LethalCompanyInputUtils.dll</HintPath>
     </Reference>
