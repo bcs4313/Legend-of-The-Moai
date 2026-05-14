@@ -80,22 +80,16 @@ public class EasterDoorLock : NetworkBehaviour
 
         if (RoundManager.Instance.IsHost)
         {
-            while (RoundManager.Instance.dungeonGenerator == null)
+            while (RoundManager.Instance.dungeonIsGenerating == true)
             {
                 Debug.Log($"Easter Door Lock: Awaiting for level to start... 1");
                 await Task.Delay(1000);
             }
-            while (RoundManager.Instance.dungeonGenerator.Generator == null)
+            while (RoundManager.Instance.dungeonCompletedGenerating == false)
             {
                 Debug.Log($"Easter Door Lock: Awaiting for level to start... 2");
                 await Task.Delay(1000);
             }
-            while (RoundManager.Instance.dungeonGenerator.Generator.IsGenerating)
-            {
-                Debug.Log($"Easter Door Lock: Awaiting for level to start... 3");
-                await Task.Delay(1000);
-            }
-
             while (!StartOfRound.Instance.shipHasLanded)  // assuming 15 Scrap objects always spawn
             {
                 Debug.Log($"Easter Door Lock: Awaiting for ship to land... 4");

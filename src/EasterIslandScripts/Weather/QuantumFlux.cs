@@ -67,11 +67,6 @@ namespace EasterIsland.src.EasterIslandScripts.Weather
             {
                 timeTick = Time.time;
 
-                if (RoundManager.Instance.dungeonGenerator == null)
-                {
-                    Destroy(gameObject);
-                }
-
                 // teleport any ai within a certain distance (5.5f)
                 foreach (EnemyAI ai in ais)
                 {

@@ -42,17 +42,17 @@ public class PortalMoaiSpawn : MonoBehaviour
     {
         if (RoundManager.Instance.IsServer)
         {
-            while (RoundManager.Instance.dungeonGenerator == null)
+            while (RoundManager.Instance.dungeonIsGenerating == true)
             {
                 Debug.Log($"Moai Enemy: Awaiting to spawn portal  - -3...");
                 await Task.Delay(1000);
             }
-            while (RoundManager.Instance.dungeonGenerator.Generator == null)
+            while (RoundManager.Instance.dungeonCompletedGenerating == false)
             {
                 Debug.Log($"Moai Enemy: Awaiting to spawn portal - -2...");
                 await Task.Delay(1000);
             }
-            while (RoundManager.Instance.dungeonGenerator.Generator.IsGenerating)
+            while (!StartOfRound.Instance.shipHasLanded)  // assuming 15 Scrap objects always spawn
             {
                 Debug.Log($"Moai Enemy: Awaiting to spawn portal - -1...");
                 await Task.Delay(1000);

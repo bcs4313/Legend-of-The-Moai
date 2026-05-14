@@ -85,7 +85,7 @@ namespace EasterIsland.src.EasterIslandScripts
             if (charging) { charge += 25f * Time.deltaTime; } // 4 seconds to charge up completely
 
             // delete self if not on moon and older than 6 seconds (to deal with lag and elevatorUp change delays)
-            if (!RoundManager.Instance.dungeonGenerator && Time.time - timeStarted > 10f)
+            if (!RoundManager.Instance.dungeonCompletedGenerating && Time.time - timeStarted > 10f)
             {
                 if (GameObject.Find("PortalPair(Clone)"))
                 {
