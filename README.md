@@ -454,4 +454,11 @@ It also has a purity stat which affects how drunk it makes you.
 1.8.4
 - Compatibility Update for V73 of Lethal Company.
 - Fixed an annoying issue where baboon hawk modifications would play sounds globally rather than locally
+
+1.8.5
+- Updated for V81 of lethal company, fixing many broken scripts that made the main quest impossible.
+
+1.8.6
+- Patch to fix the golden head item, morshu item, and the king item from failing to persist across moons and/or save in game.
+
 </details>

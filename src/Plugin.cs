@@ -31,7 +31,7 @@ namespace EasterIsland
     [BepInDependency("BMX.LobbyCompatibility", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("mrov.WeatherRegistry", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("ainavt.lc.lethalconfig")]
-    [BepInPlugin("LegendOfTheMoai", "Legend of The Moai", "1.8.5")]
+    [BepInPlugin("LegendOfTheMoai", "Legend of The Moai", "1.8.6")]
     public class Plugin : BaseUnityPlugin
     {
         public static Harmony _harmony;
