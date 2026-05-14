@@ -52,11 +52,9 @@ namespace EasterIsland
         public static GameObject PartDogHead;
         public static GameObject HeavenBase;
 
-        // As of V81, items must be registered in LethalLib or they won't be properly saved in dawnlib (moon transition bug, CRITICAL)
+        // items that must be registered or they won't be properly saved as dawnlib (moon transition bug, CRITICAL)
         public static GameObject GoldenHead;
         public static Item GoldenHeadItem;
-        public static GameObject GHFPrefab;
-        public static Item GHFItem;
 
         // eclipse volume management
         long seedSync = -1;
@@ -160,26 +158,11 @@ namespace EasterIsland
             PartHawkWings = heavenNetBundle.LoadAsset<GameObject>("PartHawkWings");
             PartDogHead = heavenNetBundle.LoadAsset<GameObject>("PartMouthDogHead");
             HeavenBase = heavenNetBundle.LoadAsset<GameObject>("HeavenInsideBase");
-
+            
             // DawnLib item compatibilities (especially with item saving)
-            try
-            {
-                GoldenHead = easterislandBundle.LoadAsset<GameObject>("GoldenHeadItemInside");
-                GoldenHeadItem = easterislandBundle.LoadAsset<Item>("Golden Head");
-                LethalLib.Modules.Items.RegisterScrap(GoldenHeadItem, 0, LevelTypes.None);
-                LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(GoldenHead);
-            }
-            catch (Exception e) { Debug.LogError(e); }
-
-            try
-            {
-                GHFPrefab = easterislandBundle.LoadAsset<GameObject>("TechRadarPrefab");
-                GHFItem = easterislandBundle.LoadAsset<Item>("TechRadarItem");
-                LethalLib.Modules.Items.RegisterScrap(GHFItem, 0, LevelTypes.None);
-                LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(GHFPrefab);
-            }
-            catch (Exception e) { Debug.LogError(e); }
-
+            GoldenHead = easterislandBundle.LoadAsset<GameObject>("GoldenHeadItemInside");
+            GoldenHeadItem = easterislandBundle.LoadAsset<Item>("Golden Head");
+            LethalLib.Modules.Items.RegisterScrap(GoldenHeadItem, 0, LevelTypes.None);
 
             UnityEngine.Random.InitState((int)System.DateTime.Now.Ticks);
 
@@ -193,6 +176,7 @@ namespace EasterIsland
             LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(PartDogHead);
             LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(PartHawkWings);
             LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(HeavenBase);
+            LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(GoldenHead);
             //LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(QuantumCannon);
 
             // Cave piece register

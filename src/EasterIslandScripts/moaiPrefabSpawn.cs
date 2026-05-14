@@ -49,20 +49,21 @@ public class GoldMoaiSpawn : MonoBehaviour
     {
         if (RoundManager.Instance.IsServer)
         {
-            while (RoundManager.Instance.dungeonIsGenerating == true)
+
+            while(RoundManager.Instance.dungeonGenerator == null) 
             {
                 Debug.Log($"Moai Enemy: Awaiting to spawn gold moai - -3...");
-                await Task.Delay(1000);
+                await Task.Delay(1000); 
             }
-            while (RoundManager.Instance.dungeonCompletedGenerating == false)
+            while(RoundManager.Instance.dungeonGenerator.Generator == null) 
             {
                 Debug.Log($"Moai Enemy: Awaiting to spawn gold moai - -2...");
-                await Task.Delay(1000);
+                await Task.Delay(1000); 
             }
-            while (!StartOfRound.Instance.shipHasLanded)  // assuming 15 Scrap objects always spawn
+            while(RoundManager.Instance.dungeonGenerator.Generator.IsGenerating) 
             {
                 Debug.Log($"Moai Enemy: Awaiting to spawn gold moai - -1...");
-                await Task.Delay(1000);
+                await Task.Delay(1000); 
             }
 
             while (awaitSpawn)
