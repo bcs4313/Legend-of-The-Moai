@@ -31,7 +31,7 @@ namespace EasterIsland
     [BepInDependency("BMX.LobbyCompatibility", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("mrov.WeatherRegistry", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("ainavt.lc.lethalconfig")]
-    [BepInPlugin("LegendOfTheMoai", "Legend of The Moai", "1.5.5")]
+    [BepInPlugin("LegendOfTheMoai", "Legend of The Moai", "1.8.5")]
     public class Plugin : BaseUnityPlugin
     {
         public static Harmony _harmony;
@@ -57,6 +57,10 @@ namespace EasterIsland
         public static Item GoldenHeadItem;
         public static GameObject GHFPrefab;
         public static Item GHFItem;
+        public static GameObject MorshuPrefab;
+        public static Item MorshuItem;
+        public static GameObject KingPrefab;
+        public static Item KingItem;
 
         // eclipse volume management
         long seedSync = -1;
@@ -169,7 +173,7 @@ namespace EasterIsland
                 LethalLib.Modules.Items.RegisterScrap(GoldenHeadItem, 0, LevelTypes.None);
                 LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(GoldenHead);
             }
-            catch (Exception e) { Debug.LogError(e); }
+            catch (Exception e) { Debug.LogError("LegendOfTheMoai Error: " + e); }
 
             try
             {
@@ -178,7 +182,27 @@ namespace EasterIsland
                 LethalLib.Modules.Items.RegisterScrap(GHFItem, 0, LevelTypes.None);
                 LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(GHFPrefab);
             }
-            catch (Exception e) { Debug.LogError(e); }
+            catch (Exception e) { Debug.LogError("LegendOfTheMoai Error: " + e); }
+
+
+            try
+            {
+                MorshuPrefab = easterislandBundle.LoadAsset<GameObject>("MorshuPrefab");
+                MorshuItem = easterislandBundle.LoadAsset<Item>("MorshuItem");
+                LethalLib.Modules.Items.RegisterScrap(MorshuItem, 0, LevelTypes.None);
+                LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(MorshuPrefab);
+            }
+            catch (Exception e) { Debug.LogError("LegendOfTheMoai Error: " + e); }
+
+
+            try
+            {
+                KingPrefab = easterislandBundle.LoadAsset<GameObject>("KingPrefab");
+                KingItem = easterislandBundle.LoadAsset<Item>("KingItem");
+                LethalLib.Modules.Items.RegisterScrap(KingItem, 0, LevelTypes.None);
+                LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(KingPrefab);
+            }
+            catch (Exception e) { Debug.LogError("LegendOfTheMoai Error: " + e); }
 
 
             UnityEngine.Random.InitState((int)System.DateTime.Now.Ticks);
