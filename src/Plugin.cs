@@ -60,7 +60,13 @@ namespace EasterIsland
         public static GameObject MorshuPrefab;
         public static Item MorshuItem;
         public static GameObject KingPrefab;
-        public static Item KingItem;
+        public static Item KingItem; //
+        public static GameObject PlasmaCannonPrefab;
+        public static Item PlasmaCannonItem;
+        public static GameObject QuantumPaintingPrefab;
+        public static Item QuantumPaintingItem;
+        public static GameObject QuantumEnergyPrefab;
+        public static Item QuantumEnergyItem;
 
         // eclipse volume management
         long seedSync = -1;
@@ -204,6 +210,32 @@ namespace EasterIsland
             }
             catch (Exception e) { Debug.LogError("LegendOfTheMoai Error: " + e); }
 
+            try
+            {
+                PlasmaCannonPrefab = easterislandBundle.LoadAsset<GameObject>("Quantum_Cannon");
+                PlasmaCannonItem = easterislandBundle.LoadAsset<Item>("QuantumCannon");
+                LethalLib.Modules.Items.RegisterScrap(PlasmaCannonItem, 0, LevelTypes.None);
+                LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(PlasmaCannonPrefab);
+            }
+            catch (Exception e) { Debug.LogError("LegendOfTheMoai Error: " + e); }
+
+            try
+            {
+                QuantumPaintingPrefab = easterislandBundle.LoadAsset<GameObject>("QuantamItemTest2");
+                QuantumPaintingItem = easterislandBundle.LoadAsset<Item>("QuantumPainting");
+                LethalLib.Modules.Items.RegisterScrap(QuantumPaintingItem, 0, LevelTypes.None);
+                LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(QuantumPaintingPrefab);
+            }
+            catch (Exception e) { Debug.LogError("LegendOfTheMoai Error: " + e); }
+
+            try
+            {
+                QuantumEnergyPrefab = easterislandBundle.LoadAsset<GameObject>("QuantumItem");
+                QuantumEnergyItem = easterislandBundle.LoadAsset<Item>("QuantumItemDef");
+                LethalLib.Modules.Items.RegisterScrap(QuantumEnergyItem, 0, LevelTypes.None);
+                LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(QuantumEnergyPrefab);
+            }
+            catch (Exception e) { Debug.LogError("LegendOfTheMoai Error: " + e); }
 
             UnityEngine.Random.InitState((int)System.DateTime.Now.Ticks);
 
@@ -622,18 +654,7 @@ namespace EasterIsland
             }
         }
 
-        public GameObject getQuantumItemRegisteredPrefab()
-        {
-            List<Item> items = StartOfRound.Instance.allItemsList.itemsList;
-            foreach (Item it in items)
-            {
-                if (it.itemId.Equals(quantumPropertyIDMatch))
-                {
-                    return it.spawnPrefab;
-                }
-            }
-            return null;
-        }
+        public GameObject getQuantumItemRegisteredPrefab() { return QuantumEnergyPrefab; }
 
         public async void initWeatherManager()
         {

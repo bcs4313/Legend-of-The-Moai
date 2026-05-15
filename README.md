@@ -459,6 +459,6 @@ It also has a purity stat which affects how drunk it makes you.
 - Updated for V81 of lethal company, fixing many broken scripts that made the main quest impossible.
 
 1.8.6
-- Patch to fix the golden head item, morshu item, and the king item from failing to persist across moons and/or save in game.
+- Patch to fix the golden head quest item, morshu item, seeker quest item and the king item from failing to persist across moons and/or save in game.
 
 </details>

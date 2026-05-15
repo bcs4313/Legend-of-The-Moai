@@ -53,19 +53,6 @@ namespace EasterIsland.src.EasterIslandScripts.Cave_Easter_Egg
             }
         }
 
-        public GameObject findPrefab()
-        {
-            List<Item> items = StartOfRound.Instance.allItemsList.itemsList;
-            foreach(Item it in items)
-            {
-                if (it.itemId.Equals(itemIDMatch))
-                {
-                    return it.spawnPrefab;
-                }
-            }
-            return null;
-        }
-
         public void Update()
         {
             if(!inCutscene && Time.time > tUpdate + 3f)
@@ -144,8 +131,7 @@ namespace EasterIsland.src.EasterIslandScripts.Cave_Easter_Egg
             setExplosionClientRpc(true);
 
             // create the quantum cannon
-            GameObject prefab = findPrefab();
-            GameObject projectile = UnityEngine.Object.Instantiate(prefab, quantumCannonSpawnPoint.position, prefab.transform.rotation);
+            GameObject projectile = UnityEngine.Object.Instantiate(Plugin.PlasmaCannonPrefab, quantumCannonSpawnPoint.position, Plugin.PlasmaCannonPrefab.transform.rotation);
             projectile.SetActive(true);
             projectile.GetComponent<NetworkObject>().Spawn();
 

@@ -65,7 +65,7 @@ namespace EasterIsland.src.EasterIslandScripts.Cave_Easter_Egg
                 if (!obj) { continue; }
                 if (!obj.gameObject) { continue; }
 
-                if (obj.gameObject.name.ToLower().Contains("techradaritem") || obj.name.ToLower().Contains("techradaritem"))
+                if (obj.gameObject.name.ToLower().Contains("techradar") || obj.name.ToLower().Contains("techradar"))
                 {
                     if (!targetObj)
                     {

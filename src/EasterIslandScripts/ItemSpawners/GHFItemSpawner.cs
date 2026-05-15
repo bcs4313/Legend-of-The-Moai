@@ -46,7 +46,7 @@ namespace EasterIsland.src.EasterIslandScripts.ItemSpawners
                     GameObject gameObject = UnityEngine.Object.Instantiate(Plugin.GHFPrefab, this.transform.position + Vector3.up * 0.5f, Quaternion.Euler(Vector3.zero), RoundManager.Instance.spawnedScrapContainer);
                     gameObject.SetActive(value: true);
                     gameObject.GetComponent<NetworkObject>().Spawn();
-                    gameObject.GetComponent<NoisemakerProp>().targetFloorPosition = this.transform.position + Vector3.up * 0.5f;
+                    gameObject.GetComponent<GrabbableObject>().targetFloorPosition = this.transform.position + Vector3.up * 0.5f;
                     Destroy(this.gameObject);
                 }
             }
