@@ -461,4 +461,12 @@ It also has a purity stat which affects how drunk it makes you.
 1.8.6
 - Patch to fix the golden head quest item, morshu item, seeker quest item and the king item from failing to persist across moons and/or save in game.
 
+1.8.7
+- Patch to fix the quantum cannon, quantum painting and quantum properties from failing to persist across moons and saves.
+- Fixed some bugs that broke the main quest once you reached the hidden cave (Player collision issues and an uncraftable quantum cannon)
+
+1.8.8
+- Fixed compatibility issues with LethalPerformance and other performance mods.
+- Fixed many issues with the current DungeonGenerator being out of date.
+
 </details>
